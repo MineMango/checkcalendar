@@ -1,41 +1,55 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>체크캘린더</title>
   <style>
-    :root{--bg:#f3f6fb;--card:#fff;--primary:#2f6bed;--accent:#2ab57a;--danger:#f06262;--muted:#6b7280}
+    :root{ --bg:#f3f6fb; --card:#ffffff; --primary:#2f6bed; --accent:#2ab57a; --danger:#f06262; --muted:#6b7280; }
     *{box-sizing:border-box}
-    body,html{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans KR',sans-serif;background:var(--bg);color:#111}
-    .wrap{max-width:980px;margin:28px auto;padding:18px}
-    .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans KR',sans-serif;color:#111;background:var(--bg)}
+    .wrap{max-width:980px;margin:32px auto;padding:20px}
+    .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
     .brand{font-weight:700;font-size:20px}
-    .card{background:var(--card);border-radius:12px;padding:14px;box-shadow:0 6px 18px rgba(30,40,60,0.06)}
-    .btn{padding:8px 12px;border-radius:8px;border:none;background:var(--primary);color:#fff;font-weight:600;cursor:pointer}
-    .btn.secondary{background:#fff;color:var(--primary);border:1px solid #dbe4fb}
-    .btn.positive{background:var(--accent)}
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(30,40,60,0.06)}
+    .auth{max-width:380px;margin:0 auto}
+    label{display:block;font-size:13px;color:var(--muted);margin-top:12px}
+    input[type=text],input[type=password],select,textarea{width:100%;padding:10px;border:1px solid #e6e9ef;border-radius:8px;margin-top:6px;font-size:14px}
+    .row{display:flex;gap:10px}
+    .row .col{flex:1}
+    .muted{color:var(--muted);font-size:13px}
+    .btn{display:inline-block;padding:10px 14px;border-radius:8px;border:none;background:var(--primary);color:#fff;font-weight:600;cursor:pointer;transition:transform .08s ease,box-shadow .08s;box-shadow:0 6px 12px rgba(47,107,237,0.18)}
+    .btn:active{transform:translateY(1px) scale(0.995);box-shadow:0 3px 8px rgba(47,107,237,0.12)}
+    .btn.secondary{background:#fff;color:var(--primary);border:1px solid #dbe4fb;box-shadow:none}
+    .btn.positive{background:var(--accent);box-shadow:0 6px 12px rgba(42,181,122,0.14)}
     .btn.negative{background:var(--danger)}
-    .small{font-size:13px;color:var(--muted)}
-    .main{display:grid;grid-template-columns:300px 1fr;gap:16px}
-    .sidebar .profile{display:flex;gap:12px;align-items:center}
-    .avatar{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,#e6f0ff,#f3f8ff);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--primary)}
-    .grid-days{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:8px}
-    .cell{background:var(--card);border-radius:8px;padding:8px;min-height:70px;border:1px solid #eef2f6;display:flex;flex-direction:column;cursor:pointer}
+    .main{display:grid;grid-template-columns:320px 1fr;gap:18px}
+    .sidebar .profile{display:flex;align-items:center;gap:12px}
+    .avatar{width:52px;height:52px;border-radius:10px;background:linear-gradient(135deg,#e6f0ff,#f3f8ff);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--primary)}
+    .meta{font-size:14px}
+    .cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+    .nav{display:flex;gap:8px;align-items:center}
+    .month-display{font-weight:700}
+    .grid-week{display:flex;gap:6px;margin-bottom:6px}
+    .grid-days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+    .cell{background:var(--card);border-radius:8px;padding:10px;min-height:70px;cursor:pointer;border:1px solid #eef2f6;display:flex;flex-direction:column}
     .cell.out{opacity:0.35}
+    .cell .date{font-weight:700}
+    .cell .dots{margin-top:auto;display:flex;gap:6px;flex-wrap:wrap}
+    .dot{width:8px;height:8px;border-radius:50%}
     .cell:hover{transform:translateY(-4px);transition:transform .12s}
     .selected{outline:3px solid rgba(47,107,237,0.12);box-shadow:0 8px 24px rgba(47,107,237,0.06)}
-    .memo-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
-    .memo-item{padding:8px;border-radius:8px;background:#fbfdff;border:1px solid #eef3ff}
-    .chat-window{display:flex;flex-direction:column;height:420px}
-    .messages{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:8px;border-radius:8px;border:1px solid #eef3ff;background:linear-gradient(180deg,#fff,#fbfdff)}
+    .memo-list{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+    .memo-item{padding:10px;border-radius:8px;background:#fbfdff;border:1px solid #eef3ff}
+    .small{font-size:13px;color:var(--muted)}
+    /* chat */
+    .chat-window{display:flex;flex-direction:column;height:520px}
+    .messages{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:8px;background:linear-gradient(180deg,#ffffff, #fbfdff);border-radius:8px;border:1px solid #eef3ff}
     .msg{padding:8px 10px;border-radius:8px;max-width:75%}
     .msg.me{align-self:flex-end;background:#e6f0ff}
     .msg.other{align-self:flex-start;background:#fff}
+    .chat-input{display:flex;gap:8px;margin-top:8px}
     @media (max-width:880px){.main{grid-template-columns:1fr}.sidebar{order:2}}
-    /* modal */
-    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35)}
-    .modal .inner{background:var(--card);padding:16px;border-radius:10px;min-width:320px}
   </style>
 </head>
 <body>
@@ -44,102 +58,84 @@
       <div class="brand">체크캘린더</div>
       <div id="headerActions"></div>
     </div>
-
     <div id="content"></div>
   </div>
-
 <script>
-/*
-  Single-file: 사용자별 로그인, 개인 메모(달력), 친구 연결, 1:1 및 그룹 채팅
-  저장: localStorage에 한 객체(STORAGE_KEY)로 관리
-*/
-const STORAGE_KEY = 'checkcalendar_v3';
-let state = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-state.users = state.users || {}; // { id: { pw, notes: { 'YYYY-MM-DD': [{text,created}] }, connections: [], rooms: [] } }
-state.chats = state.chats || {}; // { roomId: { id, name, members:[], messages: [{from,text,ts}] } }
+const STORAGE_KEY = 'checkcalendar_users_v2';
+let users = JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
+let chats = users._chats || {};
 let currentUser = null;
 let view = { year: new Date().getFullYear(), month: new Date().getMonth(), mode: 'calendar' };
 let selectedDate = null; // YYYY-MM-DD
-let activeRoom = null; // roomId
+let activeChatId = null;
 
-function persist(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+function save(){ users._chats = chats; localStorage.setItem(STORAGE_KEY, JSON.stringify(users)); }
+function uidDate(y,m,d){ const mm=String(m+1).padStart(2,'0'); const dd=String(d).padStart(2,'0'); return `${y}-${mm}-${dd}`; }
 
-// ---------- AUTH ----------
+// --- auth ---
 function renderAuth(){
   document.getElementById('content').innerHTML = `
-    <div class="card" style="max-width:420px;margin:0 auto">
-      <h3 style="margin:0 0 8px 0">계정으로 시작</h3>
-      <div class="small">아이디와 비밀번호로 간편하게 이용하세요.</div>
-      <label class="small" style="margin-top:12px">아이디</label>
-      <input id="f_id" type="text" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6e9ef;margin-top:6px" />
-      <label class="small" style="margin-top:8px">비밀번호</label>
-      <input id="f_pw" type="password" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6e9ef;margin-top:6px" />
-      <div style="display:flex;gap:8px;margin-top:12px">
-        <button class="btn" onclick="doLogin()">로그인</button>
-        <button class="btn secondary" onclick="renderRegister()">회원가입</button>
-      </div>
-      <div id="authMsg" class="small" style="margin-top:10px;color:var(--muted)"></div>
-    </div>`;
+  <div class="card auth">
+    <h3 style="margin:0 0 8px 0">계정으로 시작</h3>
+    <div class="muted">아이디와 비밀번호로 간편하게 이용하세요.</div>
+    <label>아이디</label>
+    <input id="f_id" type="text" placeholder="영문/숫자 조합" />
+    <label>비밀번호</label>
+    <input id="f_pw" type="password" placeholder="8자 이상" />
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn" onclick="doLogin()">로그인</button>
+      <button class="btn secondary" onclick="renderRegister()">회원가입</button>
+    </div>
+    <div id="authMsg" class="muted" style="margin-top:10px"></div>
+  </div>`;
   document.getElementById('headerActions').innerHTML = '';
 }
 function renderRegister(){
   document.getElementById('content').innerHTML = `
-    <div class="card" style="max-width:420px;margin:0 auto">
-      <h3 style="margin:0 0 8px 0">새 계정 만들기</h3>
-      <label class="small">아이디</label>
-      <input id="r_id" type="text" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6e9ef;margin-top:6px" />
-      <label class="small" style="margin-top:8px">비밀번호</label>
-      <input id="r_pw" type="password" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6e9ef;margin-top:6px" />
-      <label class="small" style="margin-top:8px">비밀번호 확인</label>
-      <input id="r_pw2" type="password" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6e9ef;margin-top:6px" />
-      <div style="display:flex;gap:8px;margin-top:12px">
-        <button class="btn positive" onclick="doRegister()">회원가입</button>
-        <button class="btn secondary" onclick="renderAuth()">취소</button>
-      </div>
-      <div id="regMsg" class="small" style="margin-top:10px;color:var(--muted)"></div>
-    </div>`;
+  <div class="card auth">
+    <h3 style="margin:0 0 8px 0">새 계정 만들기</h3>
+    <label>아이디</label>
+    <input id="r_id" type="text" placeholder="영문/숫자 4~20자" />
+    <label>비밀번호</label>
+    <input id="r_pw" type="password" placeholder="8자 이상" />
+    <label>비밀번호 확인</label>
+    <input id="r_pw2" type="password" placeholder="다시 입력" />
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn positive" onclick="doRegister()">회원가입</button>
+      <button class="btn secondary" onclick="renderAuth()">취소</button>
+    </div>
+    <div id="regMsg" class="muted" style="margin-top:10px"></div>
+  </div>`;
   document.getElementById('headerActions').innerHTML = '';
 }
 function doRegister(){
-  const id = (document.getElementById('r_id').value || '').trim();
-  const pw = (document.getElementById('r_pw').value || '');
-  const pw2 = (document.getElementById('r_pw2').value || '');
-  const msg = document.getElementById('regMsg'); msg.innerText = '';
+  const id = document.getElementById('r_id').value.trim();
+  const pw = document.getElementById('r_pw').value; const pw2 = document.getElementById('r_pw2').value; const msg=document.getElementById('regMsg'); msg.innerText='';
   if (!/^[a-zA-Z0-9_-]{4,20}$/.test(id)){ msg.innerText='아이디는 영문/숫자 4~20자이어야 합니다.'; return; }
   if (pw.length < 8){ msg.innerText='비밀번호는 8자 이상이어야 합니다.'; return; }
   if (pw !== pw2){ msg.innerText='비밀번호가 일치하지 않습니다.'; return; }
-  if (state.users[id]){ msg.innerText='이미 존재하는 아이디입니다.'; return; }
-  state.users[id] = { pw, notes: {}, connections: [], rooms: [] };
-  persist();
-  msg.innerText = '회원가입 완료. 로그인 화면으로 이동합니다.';
-  setTimeout(()=>renderAuth(),700);
+  if (users[id]){ msg.innerText='이미 존재하는 아이디입니다.'; return; }
+  users[id] = { pw: pw, notes: {}, connections: [], chats: [] };
+  save(); msg.innerText='회원가입 완료. 로그인 화면으로 이동합니다.'; setTimeout(()=>renderAuth(),700);
 }
-function doLogin(){
-  const id = (document.getElementById('f_id').value || '').trim();
-  const pw = (document.getElementById('f_pw').value || '');
-  const msg = document.getElementById('authMsg'); msg.innerText = '';
-  if (!state.users[id] || state.users[id].pw !== pw){ msg.innerText='아이디 또는 비밀번호가 올바르지 않습니다.'; return; }
-  currentUser = id; renderApp();
-}
+function doLogin(){ const id=document.getElementById('f_id').value.trim(); const pw=document.getElementById('f_pw').value; const msg=document.getElementById('authMsg'); msg.innerText=''; if(!users[id]||users[id].pw!==pw){ msg.innerText='아이디 또는 비밀번호가 올바르지 않습니다.'; return; } currentUser=id; renderApp(); }
 
-// ---------- APP ----------
+// --- main ---
 function renderHeader(){
   document.getElementById('headerActions').innerHTML = `
     <div style="display:flex;gap:8px;align-items:center">
-      <div class="small">${currentUser}님</div>
+      <div class="small" style="margin-right:8px">${currentUser}님</div>
       <button class="btn secondary" onclick="doLogout()">로그아웃</button>
     </div>`;
 }
-function doLogout(){ currentUser = null; activeRoom = null; selectedDate = null; view.mode = 'calendar'; renderAuth(); document.getElementById('headerActions').innerHTML = ''; }
 
-function renderApp(){ renderHeader();
-  document.getElementById('content').innerHTML = `
+function renderApp(){ renderHeader(); document.getElementById('content').innerHTML = `
   <div class="main">
     <div class="sidebar">
-      <div class="card profile" style="padding:12px;margin-bottom:12px">
-        <div class="profile">
+      <div class="card profile" style="padding:14px;margin-bottom:12px">
+        <div class="profile" style="align-items:flex-start">
           <div class="avatar">${currentUser.slice(0,1).toUpperCase()}</div>
-          <div style="margin-left:8px">
+          <div class="meta">
             <div style="font-weight:700">${currentUser}님</div>
             <div class="small">개인 캘린더 · 친구 연결 · 채팅</div>
           </div>
@@ -147,16 +143,16 @@ function renderApp(){ renderHeader();
       </div>
 
       <div class="card" style="padding:12px;margin-bottom:12px">
-        <div class="small">연결 (친구 추가)</div>
+        <div class="muted">연결 (친구 추가)</div>
         <div style="display:flex;gap:8px;margin-top:8px">
-          <input id="findId" placeholder="아이디로 검색" style="flex:1;padding:8px;border-radius:8px;border:1px solid #e6e9ef" />
+          <input id="findId" placeholder="아이디로 검색" />
           <button class="btn" onclick="searchAndAdd()">추가</button>
         </div>
         <div id="connList" style="margin-top:10px"></div>
       </div>
 
       <div class="card" style="padding:12px">
-        <div class="small">선택된 날짜</div>
+        <div class="muted">선택된 날짜</div>
         <div id="selInfo" style="margin-top:8px">날짜를 선택하세요.</div>
         <div style="margin-top:10px">
           <textarea id="noteInput" placeholder="메모를 작성하세요." style="width:100%;height:80px;border-radius:8px;padding:8px"></textarea>
@@ -173,117 +169,130 @@ function renderApp(){ renderHeader();
       <div style="display:flex;gap:8px;margin-bottom:12px">
         <button class="btn" onclick="switchMode('calendar')">캘린더</button>
         <button class="btn secondary" onclick="switchMode('chat')">채팅</button>
-        <button class="btn" onclick="openCreateGroupModal()">그룹 만들기</button>
       </div>
 
       <div id="mainArea"></div>
     </div>
   </div>`;
-  renderConnections(); renderMainArea();
+
+  populateYearMonthSelectors(); buildCalendar(view.year, view.month); renderConnections(); renderMainArea();
 }
 
-// ---------- connections ----------
-function renderConnections(){ const el = document.getElementById('connList'); el.innerHTML = ''; const list = (state.users[currentUser].connections || []); if(list.length===0){ el.innerHTML = '<div class="small">연결된 사용자가 없습니다.</div>'; return; } list.forEach(id=>{ const row = document.createElement('div'); row.style.display='flex'; row.style.justifyContent='space-between'; row.style.alignItems='center'; row.style.marginTop='6px'; row.innerHTML = `<div>${id}</div>`; const btn = document.createElement('button'); btn.className='btn secondary'; btn.innerText='채팅'; btn.onclick = ()=> openOneToOne(id); row.appendChild(btn); el.appendChild(row); }); }
+function doLogout(){ currentUser=null; renderAuth(); document.getElementById('headerActions').innerHTML=''; }
 
-function searchAndAdd(){ const id = (document.getElementById('findId').value || '').trim(); if(!id){ alert('아이디를 입력하세요.'); return; } if(!state.users[id]){ alert('해당 아이디가 없습니다.'); return; } if(id === currentUser){ alert('자기 자신은 추가할 수 없습니다.'); return; } const mine = state.users[currentUser]; mine.connections = mine.connections || []; const other = state.users[id]; other.connections = other.connections || []; if(mine.connections.includes(id)){ alert('이미 연결된 사용자입니다.'); return; } mine.connections.push(id); other.connections.push(currentUser);
-  // create or ensure 1:1 room
-  const roomId = createOrGetDirectRoom(currentUser,id);
-  persist(); renderConnections(); alert(id + '님과 연결되었습니다.'); }
+// --- connections ---
+function renderConnections(){ const el = document.getElementById('connList'); el.innerHTML=''; const list = users[currentUser].connections || []; if(list.length===0){ el.innerHTML='<div class="small">연결된 사용자가 없습니다.</div>'; return; } list.forEach(id=>{ const div=document.createElement('div'); div.style.display='flex'; div.style.justifyContent='space-between'; div.style.alignItems='center'; div.style.marginTop='6px'; div.innerHTML = `<div>${id}</div>`; const btn=document.createElement('button'); btn.className='btn secondary'; btn.innerText='채팅'; btn.onclick = ()=>{ openChatWith(id); }; div.appendChild(btn); el.appendChild(div); }); }
 
-function createOrGetDirectRoom(a,b){ const ids = [a,b].sort(); const key = 'dm--' + ids.join('--'); if(!state.chats[key]){ state.chats[key] = { id:key, name: ids.join(','), members: ids, messages: [] }; // register in users.rooms
-    state.users[a].rooms = state.users[a].rooms || []; state.users[b].rooms = state.users[b].rooms || []; if(!state.users[a].rooms.includes(key)) state.users[a].rooms.push(key); if(!state.users[b].rooms.includes(key)) state.users[b].rooms.push(key); persist(); }
-  return key;
-}
+function searchAndAdd(){ const id=document.getElementById('findId').value.trim(); if(!id){ alert('아이디를 입력하세요.'); return; } if(!users[id]){ alert('해당 아이디가 없습니다.'); return; } if(id===currentUser){ alert('자기 자신은 추가할 수 없습니다.'); return; } if((users[currentUser].connections||[]).includes(id)){ alert('이미 연결된 사용자입니다.'); return; }
+  users[currentUser].connections = users[currentUser].connections||[]; users[id].connections = users[id].connections||[]; users[currentUser].connections.push(id); users[id].connections.push(currentUser);
+  // create chat id
+  const chatId = [currentUser,id].sort().join('--'); if(!chats[chatId]){ chats[chatId] = { participants:[currentUser,id], messages:[] }; }
+  save(); renderConnections(); alert(id+'님과 연결되었습니다.'); }
 
-// ---------- main area (calendar / chat) ----------
+// --- main area (calendar / chat) ---
 function switchMode(m){ view.mode = m; renderMainArea(); }
-function renderMainArea(){ const area = document.getElementById('mainArea'); if(view.mode === 'calendar'){ area.innerHTML = `
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div style="font-weight:700" id="monthTitle"></div>
-        <div class="small">이번 달 보기 · 날짜 클릭으로 선택</div>
+function renderMainArea(){ const area = document.getElementById('mainArea'); if(view.mode==='calendar'){ area.innerHTML = `
+  <div class="card" style="padding:12px">
+    <div class="cal-header">
+      <div class="nav">
+        <button class="btn secondary" onclick="prevMonth()">◀</button>
+        <div class="month-display" id="monthTitle"></div>
+        <button class="btn secondary" onclick="nextMonth()">▶</button>
       </div>
-      <div class="grid-days" id="calGrid"></div>
-    </div>`;
-    buildCalendar(view.year,view.month);
-  } else {
-    area.innerHTML = `
-      <div class="card">
-        <div style="display:flex;gap:12px">
-          <div style="width:260px">
-            <div class="small muted">채팅 방</div>
-            <div id="roomList" style="margin-top:8px"></div>
-          </div>
-          <div style="flex:1">
-            <div id="chatBox"></div>
-          </div>
+      <div class="small">이번 달 보기 · 날짜 클릭으로 선택</div>
+    </div>
+    <div class="grid-week small muted">
+      <div style="width:14%;text-align:center">일</div>
+      <div style="width:14%;text-align:center">월</div>
+      <div style="width:14%;text-align:center">화</div>
+      <div style="width:14%;text-align:center">수</div>
+      <div style="width:14%;text-align:center">목</div>
+      <div style="width:14%;text-align:center">금</div>
+      <div style="width:14%;text-align:center">토</div>
+    </div>
+    <div id="calGrid" class="grid-days" style="margin-top:8px"></div>
+  </div>`; buildCalendar(view.year,view.month); }
+  else { area.innerHTML = `
+    <div class="card" style="padding:12px">
+      <div style="display:flex;gap:12px">
+        <div style="width:260px">
+          <div class="small muted">친구 목록</div>
+          <div id="chatConnList" style="margin-top:8px"></div>
         </div>
-      </div>`;
-    renderRoomList(); renderChatBox();
-  } }
-
-// ---------- calendar ----------
-function uidDate(y,m,d){ const mm = String(m+1).padStart(2,'0'); const dd = String(d).padStart(2,'0'); return `${y}-${mm}-${dd}`; }
-function buildCalendar(y,m){ const grid = document.getElementById('calGrid'); if(!grid) return; document.getElementById('monthTitle').innerText = `${y}년 ${m+1}월`; grid.innerHTML = '';
-  const first = new Date(y,m,1); const startDay = first.getDay(); const days = new Date(y,m+1,0).getDate(); const prevDays = new Date(y,m,0).getDate(); const total = startDay + days; const trailing = (7 - (total % 7)) % 7;
-  for(let i=0;i<startDay;i++){ const d = prevDays - startDay + 1 + i; grid.appendChild(makeCell(y,m,d,true)); }
-  for(let d=1; d<=days; d++){ grid.appendChild(makeCell(y,m,d,false)); }
-  for(let i=1;i<=trailing;i++){ grid.appendChild(makeCell(y,m+1,i,true)); }
-}
-function makeCell(y,m,d,out=false){ const cell = document.createElement('div'); cell.className = 'cell' + (out? ' out' : ''); const dateDiv = document.createElement('div'); dateDiv.className = 'date'; dateDiv.innerText = d; const iso = (function(){ let dtY=y; let dtM=m; if(m<0){ dtY=y-1; dtM=11 } if(m>11){ dtY=y+1; dtM=0 } return uidDate(dtY,dtM,d); })(); cell.appendChild(dateDiv);
-  const dots = document.createElement('div'); dots.className='dots'; const notes = (state.users[currentUser].notes && state.users[currentUser].notes[iso]) || []; notes.slice(0,6).forEach((n,i)=>{ const dot = document.createElement('div'); dot.style.width='8px'; dot.style.height='8px'; dot.style.borderRadius='50%'; dot.style.background = i%2? '#ffd166':'#2f6bed'; dot.style.marginRight='4px'; dots.appendChild(dot); }); cell.appendChild(dots);
-  cell.onclick = ()=>{ selectedDate = iso; document.querySelectorAll('.cell').forEach(c=>c.classList.remove('selected')); cell.classList.add('selected'); document.getElementById('selInfo').innerHTML = `<div style="font-weight:700">${iso}</div><div class=\"small\">메모을 추가하거나 기존 메모를 관리하세요.</div>`; loadNotes(); };
-  return cell; }
-
-// ---------- notes (private) ----------
-function addNote(){ if(!selectedDate){ alert('먼저 날짜를 선택하세요.'); return; } const txt = (document.getElementById('noteInput').value || '').trim(); if(!txt) return; const u = state.users[currentUser]; u.notes = u.notes || {}; u.notes[selectedDate] = u.notes[selectedDate] || []; u.notes[selectedDate].push({ text: txt, created: Date.now() }); persist(); document.getElementById('noteInput').value = ''; loadNotes(); buildCalendar(view.year,view.month); }
-function loadNotes(){ const container = document.getElementById('noteList'); if(!container) return; container.innerHTML=''; const notes = (state.users[currentUser].notes && state.users[currentUser].notes[selectedDate]) || []; if(notes.length===0){ container.innerHTML = '<div class="small">메모가 없습니다.</div>'; return; } notes.forEach((n,idx)=>{ const el = document.createElement('div'); el.className='memo-item'; el.innerHTML = `<div style="font-weight:700">${escapeHtml(n.text)}</div><div class="small">${new Date(n.created).toLocaleString()}</div>`; const del = document.createElement('button'); del.className='btn secondary'; del.style.marginTop='8px'; del.innerText='삭제'; del.onclick = ()=>{ state.users[currentUser].notes[selectedDate].splice(idx,1); if(state.users[currentUser].notes[selectedDate].length===0) delete state.users[currentUser].notes[selectedDate]; persist(); loadNotes(); buildCalendar(view.year,view.month); }; el.appendChild(del); container.appendChild(el); }); }
-function clearNotes(){ if(!selectedDate) return; if(!confirm('이 날짜의 모든 메모를 삭제하시겠습니까?')) return; delete state.users[currentUser].notes[selectedDate]; persist(); loadNotes(); buildCalendar(view.year,view.month); }
-
-// ---------- chat: rooms list & messages ----------
-function renderRoomList(){ const el = document.getElementById('roomList'); if(!el) return; el.innerHTML=''; const rooms = state.users[currentUser].rooms || []; if(rooms.length===0){ el.innerHTML = '<div class="small">참여중인 채팅방이 없습니다.</div>'; return; } rooms.forEach(rid=>{ const r = state.chats[rid]; if(!r) return; const row = document.createElement('div'); row.style.display='flex'; row.style.justifyContent='space-between'; row.style.alignItems='center'; row.style.marginTop='6px'; row.innerHTML = `<div>${escapeHtml(r.name || r.id)}</div>`; const btn = document.createElement('button'); btn.className = 'btn'; btn.innerText = '열기'; btn.onclick = ()=> openRoom(rid); row.appendChild(btn); el.appendChild(row); }); }
-
-function openRoom(rid){ activeRoom = rid; view.mode = 'chat'; renderMainArea(); renderChatBox(); }
-
-function openOneToOne(friendId){ const rid = createOrGetDirectRoom(currentUser, friendId); openRoom(rid); }
-
-function renderChatBox(){ const box = document.getElementById('chatBox'); if(!box) return; if(!activeRoom){ box.innerHTML = '<div class="small">채팅할 방을 선택하세요.</div>'; return; } const room = state.chats[activeRoom]; if(!room){ box.innerHTML = '<div class="small">방을 찾을 수 없습니다.</div>'; return; }
-  let html = `<div class="chat-window"><div class="small" style="margin-bottom:8px">${escapeHtml(room.name || room.id)} · 참여자: ${room.members.join(', ')}</div><div id="messages" class="messages">`;
-  room.messages.forEach(m=>{ const cls = m.from === currentUser ? 'me' : 'other'; html += `<div class="msg ${cls}"><div style="font-size:13px">${escapeHtml(m.text)}</div><div class="small" style="margin-top:6px">${new Date(m.ts).toLocaleString()}</div></div>`; });
-  html += `</div><div style="display:flex;gap:8px;margin-top:8px"><input id="chatText" placeholder="메시지 입력" style="flex:1;padding:8px;border-radius:8px;border:1px solid #e6e9ef" /><button class="btn" onclick="sendMessage()">전송</button></div></div>`;
-  box.innerHTML = html; const msgs = document.getElementById('messages'); if(msgs) msgs.scrollTop = msgs.scrollHeight;
+        <div style="flex:1">
+          <div id="chatBox"></div>
+        </div>
+      </div>
+    </div>
+  `; renderChatConnections(); renderChatBox(); }
 }
 
-function sendMessage(){ const t = document.getElementById('chatText'); if(!t || !t.value.trim()) return; const text = t.value.trim(); const room = state.chats[activeRoom]; if(!room) return; room.messages.push({ from: currentUser, text, ts: Date.now() }); persist(); t.value=''; renderChatBox(); }
+function renderChatConnections(){ const el = document.getElementById('chatConnList'); el.innerHTML=''; const list = users[currentUser].connections||[]; if(list.length===0){ el.innerHTML='<div class="small">연결된 사용자가 없습니다.</div>'; return; } list.forEach(id=>{ const d=document.createElement('div'); d.style.display='flex'; d.style.justifyContent='space-between'; d.style.alignItems='center'; d.style.marginTop='6px'; d.innerHTML = `<div>${id}</div>`; const btn=document.createElement('button'); btn.className='btn'; btn.innerText='열기'; btn.onclick=()=>openChatWith(id); d.appendChild(btn); el.appendChild(d); }); }
 
-function renderRoomListAll(){ // helper to update user's rooms when state changes
-  const u = state.users[currentUser]; u.rooms = u.rooms || []; // keep rooms unique
+function openChatWith(friendId){ const chatId = [currentUser,friendId].sort().join('--'); if(!chats[chatId]){ chats[chatId] = { participants:[currentUser,friendId], messages:[] }; save(); } activeChatId = chatId; view.mode='chat'; renderMainArea(); renderChatBox(); }
+
+function renderChatBox(){ const box = document.getElementById('chatBox'); if(!activeChatId){ box.innerHTML = '<div class="small">채팅할 친구를 선택하세요.</div>'; return; } const chat = chats[activeChatId]; if(!chat){ box.innerHTML = '<div class="small">채팅 방이 없습니다.</div>'; return; }
+  let html = `<div class="chat-window"><div class="small" style="margin-bottom:8px">참여자: ${chat.participants.join(', ')}</div><div id="messages" class="messages">`;
+  chat.messages.forEach(m=>{ const who = m.from===currentUser? 'me':'other'; html += `<div class="msg ${who}"><div style="font-size:13px">${m.text}</div><div class="small" style="margin-top:6px">${new Date(m.ts).toLocaleString()}</div></div>`; });
+  html += `</div><div class="chat-input"><input id="chatText" placeholder="메시지 입력" style="flex:1;padding:10px;border-radius:8px;border:1px solid #e6e9ef" /><button class="btn" onclick="sendMessage()">전송</button></div></div>`;
+  box.innerHTML = html; const msgs = document.getElementById('messages'); msgs.scrollTop = msgs.scrollHeight;
 }
 
-// ---------- group creation modal ----------
-function openCreateGroupModal(){ const modal = document.createElement('div'); modal.className = 'modal'; modal.id = 'groupModal'; modal.innerHTML = `<div class="inner card"><h4>그룹 채팅 만들기</h4><input id="groupRoomName" placeholder="그룹 이름" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6e9ef;margin-top:8px" /><textarea id="groupMemberIds" placeholder="참여자 아이디를 쉼표로 구분" style="width:100%;height:80px;margin-top:8px;border-radius:8px;border:1px solid #e6e9ef"></textarea><div style="display:flex;gap:8px;margin-top:8px"><button class="btn" id="groupCreateBtn">생성</button><button class="btn secondary" id="groupCancelBtn">취소</button></div></div>`;
-  document.body.appendChild(modal);
-  document.getElementById('groupCancelBtn').onclick = ()=>{ document.body.removeChild(modal); };
-  document.getElementById('groupCreateBtn').onclick = ()=>{
-    const name = (document.getElementById('groupRoomName').value || '').trim();
-    const idsRaw = (document.getElementById('groupMemberIds').value || '').trim();
-    const others = idsRaw.split(',').map(s=>s.trim()).filter(s=>s && s!==currentUser);
-    // validate
-    const missing = others.filter(id=>!state.users[id]);
-    if(missing.length) { alert('다음 사용자들을 찾을 수 없습니다: ' + missing.join(', ')); return; }
-    const members = Array.from(new Set([currentUser, ...others]));
-    const roomId = 'room--' + Date.now();
-    state.chats[roomId] = { id: roomId, name: name || ('그룹-'+roomId.slice(-4)), members, messages: [] };
-    // register room for each member
-    members.forEach(id=>{ state.users[id].rooms = state.users[id].rooms || []; if(!state.users[id].rooms.includes(roomId)) state.users[id].rooms.push(roomId); });
-    persist(); document.body.removeChild(modal); view.mode='chat'; activeRoom = roomId; renderMainArea(); renderRoomList(); renderChatBox(); };
-}
+function sendMessage(){ const txt = document.getElementById('chatText'); if(!txt || !txt.value.trim()) return; const text = txt.value.trim(); chats[activeChatId].messages.push({from:currentUser,text,ts:Date.now()}); save(); txt.value=''; renderChatBox(); }
 
-// ---------- utilities ----------
-function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+// --- calendar ---
+function populateYearMonthSelectors(){ const selY=document.getElementById('selYear'); const selM=document.getElementById('selMonth'); if(!selY||!selM) return; selY.innerHTML=''; selM.innerHTML=''; const year=new Date().getFullYear(); for(let y=year-3;y<=year+3;y++){ const opt=document.createElement('option'); opt.value=y; opt.innerText=y+'년'; if(y===view.year) opt.selected=true; selY.appendChild(opt); } for(let m=0;m<12;m++){ const opt=document.createElement('option'); opt.value=m; opt.innerText=(m+1)+'월'; if(m===view.month) opt.selected=true; selM.appendChild(opt); } selY.onchange=()=>{ view.year=parseInt(selY.value); buildCalendar(view.year,view.month); } selM.onchange=()=>{ view.month=parseInt(selM.value); buildCalendar(view.year,view.month); } }
+function prevMonth(){ if(view.month===0){ view.month=11; view.year--; } else view.month--; buildCalendar(view.year,view.month); updateSelectors(); }
+function nextMonth(){ if(view.month===11){ view.month=0; view.year++; } else view.month++; buildCalendar(view.year,view.month); updateSelectors(); }
+function updateSelectors(){ const sY=document.getElementById('selYear'); const sM=document.getElementById('selMonth'); if(sY) sY.value=view.year; if(sM) sM.value=view.month; }
+function buildCalendar(y,m){ const grid=document.getElementById('calGrid'); if(!grid) return; document.getElementById('monthTitle').innerText=`${y}년 ${m+1}월`; grid.innerHTML=''; const first=new Date(y,m,1); const startDay=first.getDay(); const days=new Date(y,m+1,0).getDate(); const prevDays=new Date(y,m,0).getDate(); const total = startDay + days; const trailing = (7-(total%7))%7; for(let i=0;i<startDay;i++){ const d=prevDays - startDay + 1 + i; grid.appendChild(makeCell(y,m,d,true)); } for(let d=1;d<=days;d++){ grid.appendChild(makeCell(y,m,d,false)); } for(let i=1;i<=trailing;i++){ grid.appendChild(makeCell(y,m+1,i,true)); } }
+function makeCell(y,m,d,out=false){ const cell=document.createElement('div'); cell.className='cell'+(out?' out':''); const dateDiv=document.createElement('div'); dateDiv.className='date'; dateDiv.innerText=d; const iso=(function(){ let dtY=y; let dtM=m; if(m<0){ dtY=y-1; dtM=11 } if(m>11){ dtY=y+1; dtM=0 } return uidDate(dtY,dtM,d); })(); cell.appendChild(dateDiv); const dots=document.createElement('div'); dots.className='dots'; const userNotes = users[currentUser] && users[currentUser].notes && users[currentUser].notes[iso] ? users[currentUser].notes[iso] : []; userNotes.slice(0,6).forEach((n,i)=>{ const dot=document.createElement('div'); dot.className='dot'; dot.style.background = i%2? '#ffd166':'#2f6bed'; dots.appendChild(dot); }); cell.appendChild(dots); cell.onclick=()=>{ selectedDate=iso; document.querySelectorAll('.cell').forEach(c=>c.classList.remove('selected')); cell.classList.add('selected'); document.getElementById('selInfo').innerHTML = `<div style="font-weight:700">${iso}</div><div class="small">메모을 추가하거나 기존 메모를 관리하세요.</div>`; loadNotes(); }; return cell; }
+// --- notes (private to user) ---
+function addNote(){ if(!selectedDate){ alert('먼저 날짜를 선택하세요.'); return; } const text=document.getElementById('noteInput').value.trim(); if(!text) return; users[currentUser].notes[selectedDate]=users[currentUser].notes[selectedDate]||[]; users[currentUser].notes[selectedDate].push({text,created:Date.now()}); save(); document.getElementById('noteInput').value=''; loadNotes(); buildCalendar(view.year,view.month); }
+function loadNotes(){ const container=document.getElementById('noteList'); if(!container) return; container.innerHTML=''; const notes = users[currentUser].notes[selectedDate]||[]; if(notes.length===0) container.innerHTML='<div class="small">메모가 없습니다.</div>'; notes.forEach((n,idx)=>{ const it=document.createElement('div'); it.className='memo-item'; it.innerHTML = `<div style="font-weight:700">${n.text}</div><div class="small">${new Date(n.created).toLocaleString()}</div>`; const del=document.createElement('button'); del.className='btn secondary'; del.style.marginTop='8px'; del.innerText='삭제'; del.onclick=()=>{ users[currentUser].notes[selectedDate].splice(idx,1); if(users[currentUser].notes[selectedDate].length===0) delete users[currentUser].notes[selectedDate]; save(); loadNotes(); buildCalendar(view.year,view.month); }; it.appendChild(del); container.appendChild(it); }); }
+function clearNotes(){ if(!selectedDate) return; if(!confirm('이 날짜의 모든 메모를 삭제하시겠습니까?')) return; delete users[currentUser].notes[selectedDate]; save(); loadNotes(); buildCalendar(view.year,view.month); }
 
-// ---------- init ----------
-(function init(){ renderAuth(); })();
+// --- chat persistence helper ---
+function getChatsForUser(id){ const res = []; for(const cid in chats){ if(chats[cid].participants && chats[cid].participants.includes(id)) res.push([cid,chats[cid]]); } return res; }
+
+// --- init ---
+(function init(){ renderAuth();})();
 </script>
+<script>
+// 그룹 채팅 시스템 추가
+function createGroupChat(roomName, memberList) {
+  const users = JSON.parse(localStorage.getItem('users')||'{}');
+  const u = users[currentUser];
+  const roomId = 'room_'+Date.now();
+  const chats = JSON.parse(localStorage.getItem('_chats')||'{}');
+  chats[roomId] = { name: roomName, members: memberList, messages: [] };
+  localStorage.setItem('_chats', JSON.stringify(chats));
+  if(!u.groupRooms) u.groupRooms=[];
+  u.groupRooms.push(roomId);
+  users[currentUser]=u;
+  localStorage.setItem('users', JSON.stringify(users));
+  renderChatList();
+}
+function openGroupRoom(roomId) {
+  const chats = JSON.parse(localStorage.getItem('_chats')||'{}');
+  const room = chats[roomId];
+  if(!room) return;
+  document.getElementById('chatRoomName').innerText = room.name + ' (그룹)';
+  currentChatRoom = roomId;
+  renderMessages();
+  document.getElementById('calendarSection').style.display='none';
+  document.getElementById('chatSection').style.display='flex';
+}
+</script>
+
+<div id="groupCreateModal" class="modal hidden">
+  <div class="modal-content">
+    <h3>그룹 채팅 만들기</h3>
+    <input id="groupRoomName" placeholder="그룹 이름" />
+    <textarea id="groupMemberIds" placeholder="참여자 아이디 (쉼표로 구분)"></textarea>
+    <button onclick="const name=document.getElementById('groupRoomName').value.trim();const ids=document.getElementById('groupMemberIds').value.split(',').map(x=>x.trim()).filter(x=>x);createGroupChat(name, [currentUser,...ids]);document.getElementById('groupCreateModal').classList.add('hidden');">생성</button>
+    <button onclick="document.getElementById('groupCreateModal').classList.add('hidden')">닫기</button>
+  </div>
+</div>
 </body>
 </html>
